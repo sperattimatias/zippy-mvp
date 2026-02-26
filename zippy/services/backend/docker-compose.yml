@@ -1,0 +1,30 @@
+# Zippy — developer: Matias Speratti
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: zippy
+      POSTGRES_USER: zippy
+      POSTGRES_PASSWORD: zippy
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install && npm run prisma:generate && npm run start:dev"
+    environment:
+      DATABASE_URL: postgresql://zippy:zippy@postgres:5432/zippy?schema=public
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
