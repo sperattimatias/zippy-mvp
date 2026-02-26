@@ -1,0 +1,12 @@
+version: '3.9'
+# Zippy — developer: Matias Speratti
+
+services:
+  backend:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "echo 'Zippy backend placeholder' && tail -f /dev/null"
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
