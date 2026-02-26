@@ -25,34 +25,41 @@ enum TripStatus {
 }
 
 model users {
-  id         String   @id @default(uuid())
-  role       UserRole
-  name       String
-  phone      String   @unique
-  email      String?  @unique
-  created_at DateTime @default(now())
-  trips      trips[]
-  ratings    ratings[]
+  id                 String           @id @default(uuid())
+  role               UserRole
+  name               String
+  phone              String           @unique
+  email              String?          @unique
+  created_at         DateTime         @default(now())
+
+  driver_profile     drivers?
+  passenger_trips    trips[]          @relation("PassengerTrips")
+  driver_trips       trips[]          @relation("DriverTrips")
+  ratings            ratings[]
+  audit_logs         audit_logs[]
 }
 
 model drivers {
-  id          String   @id @default(uuid())
-  user_id     String   @unique
-  license     String
-  is_online   Boolean  @default(false)
-  current_lat Float?
-  current_lng Float?
-  user        users    @relation(fields: [user_id], references: [id])
-  vehicles    vehicles[]
+  id                 String           @id @default(uuid())
+  user_id            String           @unique
+  license            String
+  is_online          Boolean          @default(false)
+  current_lat        Float?
+  current_lng        Float?
+
+  user               users            @relation(fields: [user_id], references: [id])
+  vehicles           vehicles[]
+  trips              trips[]          @relation("DriverTrips")
 }
 
 model vehicles {
-  id         String  @id @default(uuid())
-  driver_id  String
-  plate      String  @unique
-  model      String
-  color      String?
-  driver     drivers @relation(fields: [driver_id], references: [id])
+  id                 String           @id @default(uuid())
+  driver_id          String
+  plate              String           @unique
+  model              String
+  color              String?
+
+  driver             drivers          @relation(fields: [driver_id], references: [id])
 }
 
 model trips {
@@ -68,7 +75,9 @@ model trips {
   destination_lat    Float
   destination_lng    Float
   created_at         DateTime            @default(now())
-  passenger          users               @relation(fields: [passenger_id], references: [id])
+
+  passenger          users               @relation("PassengerTrips", fields: [passenger_id], references: [id])
+  driver             drivers?            @relation("DriverTrips", fields: [driver_id], references: [id])
   negotiations       trip_negotiations[]
   ratings            ratings[]
   support_tickets    support_tickets[]
@@ -76,50 +85,56 @@ model trips {
 }
 
 model trip_negotiations {
-  id                 String   @id @default(uuid())
+  id                 String           @id @default(uuid())
   trip_id            String
   counteroffer_price Float
   decision           String?
-  created_at         DateTime @default(now())
-  trip               trips    @relation(fields: [trip_id], references: [id])
+  created_at         DateTime         @default(now())
+
+  trip               trips            @relation(fields: [trip_id], references: [id])
 }
 
 model ratings {
-  id         String   @id @default(uuid())
-  trip_id    String
-  user_id    String
-  score      Int
-  tags       String[]
-  created_at DateTime @default(now())
-  trip       trips    @relation(fields: [trip_id], references: [id])
-  user       users    @relation(fields: [user_id], references: [id])
+  id                 String           @id @default(uuid())
+  trip_id            String
+  user_id            String
+  score              Int
+  tags               String[]
+  created_at         DateTime         @default(now())
+
+  trip               trips            @relation(fields: [trip_id], references: [id])
+  user               users            @relation(fields: [user_id], references: [id])
 }
 
 model support_tickets {
-  id         String   @id @default(uuid())
-  trip_id    String?
-  category   String
-  message    String
-  status     String   @default("open")
-  created_at DateTime @default(now())
-  trip       trips?   @relation(fields: [trip_id], references: [id])
+  id                 String           @id @default(uuid())
+  trip_id            String?
+  category           String
+  message            String
+  status             String           @default("open")
+  created_at         DateTime         @default(now())
+
+  trip               trips?           @relation(fields: [trip_id], references: [id])
 }
 
 model safety_reports {
-  id         String   @id @default(uuid())
-  trip_id    String
-  type       String
-  message    String?
-  created_at DateTime @default(now())
-  trip       trips    @relation(fields: [trip_id], references: [id])
+  id                 String           @id @default(uuid())
+  trip_id            String
+  type               String
+  message            String?
+  created_at         DateTime         @default(now())
+
+  trip               trips            @relation(fields: [trip_id], references: [id])
 }
 
 model audit_logs {
-  id          String   @id @default(uuid())
-  actor_id    String?
-  action      String
-  resource    String
-  resource_id String
-  metadata    Json?
-  created_at  DateTime @default(now())
+  id                 String           @id @default(uuid())
+  actor_id           String?
+  action             String
+  resource           String
+  resource_id        String
+  metadata           Json?
+  created_at         DateTime         @default(now())
+
+  actor              users?           @relation(fields: [actor_id], references: [id])
 }
