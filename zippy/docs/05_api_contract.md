@@ -4,6 +4,8 @@
 
 Base URL: `/api/v1`
 
+Regla de naming: usar siempre `trips` en endpoints, payloads y eventos relacionados a viajes.
+
 ## Auth
 ### POST `/auth/login`
 Request:

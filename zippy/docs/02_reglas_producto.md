@@ -2,6 +2,9 @@
 
 **Zippy — developer: Matias Speratti**
 
+## Terminología
+- Se usa exclusivamente **trips** como concepto de viaje en API, eventos y documentación.
+
 ## Reglas generales
 1. Todo viaje debe tener estado válido: `requested`, `offered`, `accepted`, `arriving`, `in_progress`, `completed`, `cancelled`.
 2. Un conductor solo puede tener **un viaje activo** a la vez.
