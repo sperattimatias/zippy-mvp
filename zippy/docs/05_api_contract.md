@@ -16,61 +16,55 @@ Response 200:
 ```json
 { "accessToken": "jwt", "user": { "id": "u1", "role": "passenger" } }
 ```
-Errores:
-- `401 INVALID_OTP`
-- `429 OTP_RATE_LIMIT`
 
 ## Trips
-### POST `/trips`
+### POST `/trips` (passenger crea trip con propuesta)
 Request:
 ```json
-{
-  "origin": { "lat": -33.46, "lng": -61.48, "text": "San Martín 1200" },
-  "destination": { "lat": -33.44, "lng": -61.50, "text": "Terminal de Ómnibus" },
-  "passengerOffer": 2100
-}
+{ "origin": { "lat": -33.46, "lng": -61.48 }, "destination": { "lat": -33.44, "lng": -61.50 }, "proposed_price": 2100 }
 ```
 Response 201:
 ```json
-{ "tripId": "t1", "status": "requested", "estimatedFare": 2400 }
+{ "tripId": "t1", "status": "requested", "proposed_price": 2100 }
 ```
-Errores:
-- `400 INVALID_GEO`
-- `409 PASSENGER_ACTIVE_TRIP`
 
 ### POST `/trips/{tripId}/accept` (driver)
 Response 200:
 ```json
-{ "tripId": "t1", "status": "accepted" }
+{ "tripId": "t1", "status": "accepted", "final_price": 2100 }
 ```
-Errores:
-- `404 TRIP_NOT_FOUND`
-- `409 TRIP_NOT_AVAILABLE`
 
-### POST `/trips/{tripId}/counteroffer` (driver)
+### POST `/trips/{tripId}/counteroffer` (driver: solo 1)
 Request:
 ```json
-{ "amount": 2300 }
+{ "counteroffer_price": 2300 }
 ```
 Response 200:
 ```json
-{ "tripId": "t1", "status": "negotiating", "negotiation": { "driverCounteroffer": 2300, "expiresAt": "2026-01-01T12:00:00Z" } }
+{ "tripId": "t1", "status": "negotiating", "counteroffer_price": 2300 }
 ```
 Errores:
+- `409 COUNTEROFFER_ALREADY_SENT`
 - `409 NEGOTIATION_NOT_ALLOWED`
 
 ### POST `/trips/{tripId}/counteroffer/decision` (passenger)
-Request:
+Request (aceptar):
 ```json
 { "decision": "accept" }
 ```
 Response 200:
 ```json
-{ "tripId": "t1", "status": "accepted", "negotiationResult": "accepted", "finalFare": 2300 }
+{ "tripId": "t1", "status": "accepted", "final_price": 2300 }
 ```
-Errores:
-- `400 INVALID_DECISION`
-- `410 NEGOTIATION_EXPIRED`
+
+Request (rechazar):
+```json
+{ "decision": "reject", "reason": "price_not_acceptable" }
+```
+Response 200:
+```json
+{ "tripId": "t1", "status": "cancelled", "reason": "price_not_acceptable" }
+```
 
 ### POST `/trips/{tripId}/arrive` (driver)
 Response 200:
@@ -109,18 +103,6 @@ Request:
 Response 202:
 ```json
 { "status": "received", "caseId": "sos_1" }
-```
-Errores:
-- `404 TRIP_NOT_FOUND`
-
-### POST `/safety/reports`
-Request:
-```json
-{ "tripId": "t1", "type": "unsafe_driving", "description": "Frenadas bruscas" }
-```
-Response 201:
-```json
-{ "reportId": "r1", "status": "open" }
 ```
 
 ## Formato de error estándar
