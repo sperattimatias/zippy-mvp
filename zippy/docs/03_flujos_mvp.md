@@ -16,7 +16,7 @@
 1. Iniciar sesión y pasar a `online`.
 2. Recibir oferta de viaje.
 3. Aceptar/rechazar (o contraoferta única si aplica).
-4. Ir a buscar pasajero (`arriving`).
+4. Ir a buscar pasajero (`driver_arriving`).
 5. Iniciar viaje (`in_progress`).
 6. Finalizar viaje (`completed`).
 7. Ver resumen de ganancia y calificar pasajero.

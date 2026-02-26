@@ -54,7 +54,7 @@ Request:
 ```
 Response 200:
 ```json
-{ "tripId": "t1", "negotiation": { "driverCounteroffer": 2300, "status": "pending_passenger" } }
+{ "tripId": "t1", "status": "negotiating", "negotiation": { "driverCounteroffer": 2300, "expiresAt": "2026-01-01T12:00:00Z" } }
 ```
 Errores:
 - `409 NEGOTIATION_NOT_ALLOWED`
@@ -66,11 +66,39 @@ Request:
 ```
 Response 200:
 ```json
-{ "tripId": "t1", "negotiationResult": "accepted", "finalFare": 2300 }
+{ "tripId": "t1", "status": "accepted", "negotiationResult": "accepted", "finalFare": 2300 }
 ```
 Errores:
 - `400 INVALID_DECISION`
 - `410 NEGOTIATION_EXPIRED`
+
+### POST `/trips/{tripId}/arrive` (driver)
+Response 200:
+```json
+{ "tripId": "t1", "status": "driver_arriving" }
+```
+
+### POST `/trips/{tripId}/start` (driver)
+Response 200:
+```json
+{ "tripId": "t1", "status": "in_progress" }
+```
+
+### POST `/trips/{tripId}/complete` (driver)
+Response 200:
+```json
+{ "tripId": "t1", "status": "completed" }
+```
+
+### POST `/trips/{tripId}/dispute` (passenger|driver)
+Request:
+```json
+{ "reason": "fare_disagreement" }
+```
+Response 202:
+```json
+{ "tripId": "t1", "status": "disputed" }
+```
 
 ## Safety
 ### POST `/safety/sos`

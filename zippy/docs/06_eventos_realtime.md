@@ -9,6 +9,7 @@ Namespace sugerido: `/realtime`
   - payload: `{ tripId, driver: { id, name, vehiclePlate, rating }, etaMinutes }`
 - `trip:status_changed`
   - payload: `{ tripId, status }`
+  - `status` permitido: `requested`, `negotiating`, `accepted`, `driver_arriving`, `in_progress`, `completed`, `cancelled`, `disputed`
 - `trip:driver_location`
   - payload: `{ tripId, lat, lng, heading, speed }`
 - `trip:counteroffer_received`
@@ -19,6 +20,7 @@ Namespace sugerido: `/realtime`
 ## Eventos para conductor
 - `trip:offer`
   - payload: `{ tripId, pickup: { lat, lng, text }, estimatedFare, passengerOffer }`
+  - nota: `trip:offer` es un **evento realtime**, no un estado de trip.
 - `trip:offer_expired`
   - payload: `{ tripId }`
 - `trip:counteroffer_decision`

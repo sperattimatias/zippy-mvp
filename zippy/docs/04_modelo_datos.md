@@ -27,7 +27,7 @@
 - `id` (uuid)
 - `passenger_id` (fk users)
 - `driver_id` (fk users, nullable hasta aceptar)
-- `status`
+- `status` (`requested`, `negotiating`, `accepted`, `driver_arriving`, `in_progress`, `completed`, `cancelled`, `disputed`)
 - `origin_lat`, `origin_lng`, `origin_text`
 - `dest_lat`, `dest_lng`, `dest_text`
 - `estimated_fare`
