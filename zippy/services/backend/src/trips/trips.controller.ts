@@ -1,4 +1,5 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Headers, Param, Post } from '@nestjs/common';
+import { requireRole } from '../common/auth-context';
 import { CounterofferDecisionDto } from './dto/counteroffer-decision.dto';
 import { CounterofferDto } from './dto/counteroffer.dto';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -10,47 +11,76 @@ export class TripsController {
   constructor(private readonly tripsService: TripsService) {}
 
   @Post()
-  create(@Body() dto: CreateTripDto) {
-    return this.tripsService.createTrip(dto);
+  create(@Headers('x-role') role: string, @Headers('x-user-id') userId: string, @Body() dto: CreateTripDto) {
+    requireRole(role, ['passenger']);
+    return this.tripsService.createTrip(userId, dto);
   }
 
   @Post(':tripId/accept')
-  accept(@Param('tripId') tripId: string) {
-    return this.tripsService.accept(tripId);
+  accept(@Headers('x-role') role: string, @Headers('x-user-id') userId: string, @Param('tripId') tripId: string) {
+    requireRole(role, ['driver']);
+    return this.tripsService.accept(userId, tripId);
   }
 
   @Post(':tripId/counteroffer')
-  counteroffer(@Param('tripId') tripId: string, @Body() dto: CounterofferDto) {
-    return this.tripsService.counteroffer(tripId, dto);
+  counteroffer(
+    @Headers('x-role') role: string,
+    @Headers('x-user-id') userId: string,
+    @Param('tripId') tripId: string,
+    @Body() dto: CounterofferDto,
+  ) {
+    requireRole(role, ['driver']);
+    return this.tripsService.counteroffer(userId, tripId, dto);
   }
 
   @Post(':tripId/counteroffer/decision')
-  decision(@Param('tripId') tripId: string, @Body() dto: CounterofferDecisionDto) {
-    return this.tripsService.counterofferDecision(tripId, dto);
+  decision(
+    @Headers('x-role') role: string,
+    @Headers('x-user-id') userId: string,
+    @Param('tripId') tripId: string,
+    @Body() dto: CounterofferDecisionDto,
+  ) {
+    requireRole(role, ['passenger']);
+    return this.tripsService.counterofferDecision(userId, tripId, dto);
   }
 
   @Post(':tripId/location')
-  location(@Param('tripId') tripId: string, @Body() dto: LocationDto) {
-    return this.tripsService.location(tripId, dto);
+  location(
+    @Headers('x-role') role: string,
+    @Headers('x-user-id') userId: string,
+    @Param('tripId') tripId: string,
+    @Body() dto: LocationDto,
+  ) {
+    requireRole(role, ['driver']);
+    return this.tripsService.location(userId, tripId, dto);
   }
 
   @Post(':tripId/arrive')
-  arrive(@Param('tripId') tripId: string) {
-    return this.tripsService.arrive(tripId);
+  arrive(@Headers('x-role') role: string, @Headers('x-user-id') userId: string, @Param('tripId') tripId: string) {
+    requireRole(role, ['driver']);
+    return this.tripsService.arrive(userId, tripId);
   }
 
   @Post(':tripId/start')
-  start(@Param('tripId') tripId: string) {
-    return this.tripsService.start(tripId);
+  start(@Headers('x-role') role: string, @Headers('x-user-id') userId: string, @Param('tripId') tripId: string) {
+    requireRole(role, ['driver']);
+    return this.tripsService.start(userId, tripId);
   }
 
   @Post(':tripId/dispute')
-  dispute(@Param('tripId') tripId: string, @Body('reason') reason: string) {
-    return this.tripsService.dispute(tripId, reason);
+  dispute(
+    @Headers('x-role') role: string,
+    @Headers('x-user-id') userId: string,
+    @Param('tripId') tripId: string,
+    @Body('reason') reason: string,
+  ) {
+    requireRole(role, ['driver']);
+    return this.tripsService.dispute(userId, tripId, reason);
   }
 
   @Post(':tripId/complete')
-  complete(@Param('tripId') tripId: string) {
-    return this.tripsService.complete(tripId);
+  complete(@Headers('x-role') role: string, @Headers('x-user-id') userId: string, @Param('tripId') tripId: string) {
+    requireRole(role, ['driver']);
+    return this.tripsService.complete(userId, tripId);
   }
 }

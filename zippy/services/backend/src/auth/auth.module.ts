@@ -12,13 +12,7 @@ import { PlaceholderTwilioProvider } from './providers/placeholder-twilio.provid
     PlaceholderTwilioProvider,
     {
       provide: 'SmsProvider',
-      useFactory: (devProvider: DevSmsProvider) => devProvider,
-      inject: [DevSmsProvider],
-    },
-    {
-      provide: AuthService,
-      useFactory: (smsProvider: DevSmsProvider) => new AuthService(smsProvider),
-      inject: [DevSmsProvider],
+      useExisting: DevSmsProvider,
     },
   ],
 })
